@@ -1,4 +1,4 @@
-package com.dasankit40.memeshare
+ package com.dasankit40.memeshare
 
 import android.app.DownloadManager
 import android.content.Context
@@ -36,8 +36,10 @@ class MainActivity : AppCompatActivity() {
          loadMeme()
     }
       private fun loadMeme() {
+          val loading : ProgressBar = findViewById(R.id.progress)
+          loading.visibility = View.VISIBLE
+
         // Instantiate the RequestQueue.
-        
         val queue = Volley.newRequestQueue(this)
         val url = "https://meme-api.herokuapp.com/gimme"
 
@@ -48,7 +50,30 @@ class MainActivity : AppCompatActivity() {
                memeurl = it.getString("url")
                 var image: ImageView= findViewById(R.id.memeImageView)
 
-                Glide.with(this).load(memeurl).into(image)
+                Glide.with(this).load(memeurl).listener(object :RequestListener<Drawable>{
+                    override fun onLoadFailed(
+                        e: GlideException?,
+
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean
+                    {
+                         loading.visibility= View.VISIBLE
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                      loading.visibility= View.GONE
+                        return false
+                    }
+                }).into(image)
                  },
                 Response.ErrorListener {
                     Toast.makeText(this,"Something went wrong",Toast.LENGTH_LONG).show()
